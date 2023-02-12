@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <title>Jarbas</title>
+  <style>
+    h1 {
+      text-transform: uppercase;
+      background: linear-gradient(to right, darkgreen, green, orange, yellow);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      font-style: italic;
+      font-size: 80px;
+      margin-bottom: 10px;
+    }
+    form {
+      text-align: center;
+    }
+    textarea {
+      width: 1000px;
+      height: 250px;
+      font-size: 16px;
+      text-align: justified;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px gray;
+      font-style: italic;
+      opacity: 0.5;
+      font-size: 22px;
+      overflow: auto;
+    }
+    input[type="button"] {
+      font-size: 22px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>Jarbas</h1>
+    <form>
+      <br>
+      <textarea id="textInput" placeholder="Insira o texto AQUI..."></textarea>
+      <br>
+      <br>
+      <input type="button" value="Analisar" onclick="analyzeText()">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="button" value="Limpar" id="clearBtn">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="button" value="Copiar" id="copyBtn">
+    </form>
+    <script>
+    function analyzeText() {
+      // Get the text entered by the user
+      var text = document.getElementById("textInput").value;
+      // Send a post request to the API with the text
+      fetch("http://localhost:5000/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({text: text})
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("textInput").value = data;
+        sessionStorage.setItem("result", data.result);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    }
+    document.getElementById("clearBtn").addEventListener("click", function(){
+      document.getElementById("textInput").value = "";
+      sessionStorage.removeItem("result");
+    });
+    document.getElementById("copyBtn").addEventListener("click", function(){
+      var text = document.getElementById("textInput").value;
+      navigator.clipboard.writeText(text).then(function() {
+        var message = document.createElement("div");
+        message.innerHTML = "Texto copiado para a área de transferência";
+      message.style.backgroundColor = "green";
+      message.style.color = "white";
+      message.style.textAlign = "center";
+      message.style.padding = "10px";
+      message.style.position = "absolute";
+      message.style.top = "10px";
+      message.style.right = "10px";
+      message.style.zIndex = "1000";
+      document.body.appendChild(message);
+      setTimeout(function(){
+        message.remove();
+      }, 3000);
+    }, function(err) {
+      console.error('Failed to write text: ', err);
+    });
+  });
+    </script>
+  </div>
+</body>
+</html>
