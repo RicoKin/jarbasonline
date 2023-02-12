@@ -12,7 +12,7 @@ def analyze_text():
     text = " ".join(text.splitlines())
     result = ""
 
-    openai.api_key = "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"
+    openai.api_key = "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"
 
     def generate_text(prompt):
         completions = openai.Completion.create(
